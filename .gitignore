@@ -1,0 +1,11 @@
+# Dependencies
+node_modules/
+.npm-cache/
+
+# Expo / build caches
+.expo/
+dist/
+web-build/
+
+# Local scratch files
+TODO.md
