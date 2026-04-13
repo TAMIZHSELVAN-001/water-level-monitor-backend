@@ -1,0 +1,44 @@
+{
+  "name": "water-level-monitor-api",
+  "version": "1.0.0",
+  "description": "Water Level Monitor Backend API with Swagger Documentation",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js",
+    "test": "node test.js",
+    "seed:admin": "node scripts/seed-admin.js"
+  },
+  "keywords": [
+    "water",
+    "level",
+    "monitor",
+    "iot",
+    "sensors",
+    "tank",
+    "monitoring",
+    "real-time",
+    "swagger",
+    "api-documentation"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "body-parser": "^2.2.2",
+    "cors": "^2.8.6",
+    "dotenv": "^16.4.1",
+    "expo-server-sdk": "^6.1.0",
+    "express": "^4.22.1",
+    "pg": "^8.11.3",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.3"
+  },
+  "engines": {
+    "node": ">=14.0.0",
+    "npm": ">=6.0.0"
+  }
+}
