@@ -2017,16 +2017,6 @@ app.post('/api/settings/post', async (req, res) => {
 });
 
 // ══════════════════════════════════════════════════════════
-// 🚀 START SERVER
-// ══════════════════════════════════════════════════════════
-
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-  console.log(`🏥 Health:  http://localhost:${PORT}/health`);
-  console.log(`📚 Swagger: http://localhost:${PORT}/api-docs`);
-  console.log(`📄 JSON:    http://localhost:${PORT}/api-docs.json`);
-});
-
 // ══════════════════════════════════════════════════════════
 // 🛑 GRACEFUL SHUTDOWN
 // ══════════════════════════════════════════════════════════
