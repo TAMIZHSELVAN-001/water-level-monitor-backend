@@ -1,6 +1,6 @@
 require('dotenv').config();
 
-const bcrypt = require('bcryptjs');
+const bcrypt = require('bcrypt');
 const { Pool } = require('pg');
 
 const requiredAdminEnv = ['ADMIN_NAME', 'ADMIN_EMAIL', 'ADMIN_PASSWORD'];
