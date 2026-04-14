@@ -44,6 +44,11 @@ const dbConfig = (() => {
     ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : undefined
   };
   
+  // Warn if using localhost in production
+  if (config.host === 'localhost' && process.env.NODE_ENV === 'production') {
+    console.warn('⚠️⚠️⚠️ WARNING: Using localhost in PRODUCTION! Set DB_HOST or DATABASE_URL env vars.');
+  }
+  
   console.log('📊 Using DB Config:', {
     host: config.host,
     port: config.port,
