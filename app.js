@@ -18,19 +18,19 @@ const PORT = process.env.PORT || 3000;
 const API_KEY = process.env.API_KEY || 'dev-api-key';
 
 // ══════════════════════════════════════════════════════════
-// �️ DATABASE CONNECTION
+// 🔌 DATABASE CONNECTION
 // ══════════════════════════════════════════════════════════
 
+console.log('DB URL:', process.env.DATABASE_URL) // ← check if it prints
+
+const { Pool } = require('pg')
+
 const pool = new Pool({
-  host: process.env.DB_HOST || 'localhost',
-  port: process.env.DB_PORT || 5432,
-  database: process.env.DB_NAME || 'water_level2',
-  user: process.env.DB_USER || 'postgres',
-  password: process.env.DB_PASSWORD || 'Password',
-  max: 20,
-  idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 2000,
-});
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false }
+})
+
+module.exports = pool
 
 pool.on('connect', () => console.log('✅ PostgreSQL connected'));
 pool.on('error', (err) => console.error('❌ PostgreSQL error:', err.message));
@@ -38,7 +38,7 @@ pool.on('error', (err) => console.error('❌ PostgreSQL error:', err.message));
 // Test connection
 pool.query('SELECT NOW()', (err, res) => {
   if (err) {
-    console.error('❌ Database connection failed:', err.message);
+    console.log('❌ Database connection failed:', error.message || JSON.stringify(error))
   } else {
     console.log('✅ Database connection successful:', res.rows[0].now);
   }
