@@ -35,7 +35,7 @@ const dbConfig = (() => {
     }
   }
 
-  return {
+  const config = {
     host: process.env.DB_HOST || 'localhost',
     port: Number(process.env.DB_PORT || 5432),
     database: process.env.DB_NAME || 'water_level2',
@@ -43,6 +43,17 @@ const dbConfig = (() => {
     password: process.env.DB_PASSWORD || '',
     ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : undefined
   };
+  
+  console.log('📊 Using DB Config:', {
+    host: config.host,
+    port: config.port,
+    database: config.database,
+    user: config.user,
+    password: config.password ? '****' : '(empty)',
+    ssl: config.ssl ? 'enabled' : 'disabled'
+  });
+  
+  return config;
 })();
 
 const pool = new Pool(dbConfig);
@@ -50,12 +61,12 @@ const pool = new Pool(dbConfig);
 module.exports = pool
 
 pool.on('connect', () => console.log('✅ PostgreSQL connected'));
-pool.on('error', (err) => console.error('❌ PostgreSQL error:', err.message));
+pool.on('error', (err) => console.error('❌ PostgreSQL pool error:', err?.message || err));
 
 // Test connection
 pool.query('SELECT NOW()', (err, res) => {
   if (err) {
-    console.error('❌ Database connection failed:', err.message);
+    console.error('❌ Database connection failed:', err?.message || JSON.stringify(err));
   } else {
     console.log('✅ Database connection successful:', res.rows[0].now);
   }
@@ -80,7 +91,7 @@ pool.query(`
 `).then(() => {
   console.log('✅ push_tokens table ready');
 }).catch((err) => {
-  console.error('❌ push_tokens table error:', err.message);
+  console.error('❌ push_tokens table error:', err?.message || JSON.stringify(err));
 });
 
 // Track cooldowns in memory: { "userId-low": timestamp, "userId-high": timestamp }
