@@ -21,14 +21,31 @@ const API_KEY = process.env.API_KEY || 'dev-api-key';
 // 🔌 DATABASE CONNECTION
 // ══════════════════════════════════════════════════════════
 
-console.log('DB URL:', process.env.DATABASE_URL) // ← check if it prints
+const dbConfig = (() => {
+  if (process.env.DATABASE_URL) {
+    try {
+      new URL(process.env.DATABASE_URL);
+      return {
+        connectionString: process.env.DATABASE_URL,
+        ssl: { rejectUnauthorized: false }  // required for Supabase
+      };
+    } catch (err) {
+      console.error('⚠️ Invalid DATABASE_URL:', err.message);
+      console.error('⚠️ Falling back to DB_HOST/DB_PORT/DB_NAME/DB_USER/DB_PASSWORD configuration.');
+    }
+  }
 
-const { Pool } = require('pg')
+  return {
+    host: process.env.DB_HOST || 'localhost',
+    port: Number(process.env.DB_PORT || 5432),
+    database: process.env.DB_NAME || 'water_level2',
+    user: process.env.DB_USER || 'postgres',
+    password: process.env.DB_PASSWORD || '',
+    ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : undefined
+  };
+})();
 
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: false }
-})
+const pool = new Pool(dbConfig);
 
 module.exports = pool
 
@@ -38,7 +55,7 @@ pool.on('error', (err) => console.error('❌ PostgreSQL error:', err.message));
 // Test connection
 pool.query('SELECT NOW()', (err, res) => {
   if (err) {
-    console.log('❌ Database connection failed:', error.message || JSON.stringify(error))
+    console.error('❌ Database connection failed:', err.message);
   } else {
     console.log('✅ Database connection successful:', res.rows[0].now);
   }
