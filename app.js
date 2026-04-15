@@ -170,7 +170,11 @@ async function sendPushToUser(userId, title, body, data = {}) {
 // 🔧 MIDDLEWARE
 // ══════════════════════════════════════════════════════════
   
-app.use(cors());
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'x-api-key', 'Authorization'],
+}));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
