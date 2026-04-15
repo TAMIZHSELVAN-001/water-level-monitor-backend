@@ -21,18 +21,20 @@ const API_KEY = process.env.API_KEY || 'dev-api-key';
 // 🔌 DATABASE CONNECTION
 // ══════════════════════════════════════════════════════════
 
-// ✅ FIX: Removed new URL() validation — it rejects postgresql:// protocol
-// Now directly uses DATABASE_URL if present, otherwise falls back to individual vars
- 
-let pool;
- 
-if (process.env.DATABASE_URL && process.env.DATABASE_URL.trim() !== '') {
-  console.log('✅ Using DATABASE_URL for connection');
-  pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
-    ssl: { rejectUnauthorized: false } // required for Supabase
-  });
-} else {
+const dbConfig = (() => {
+  if (process.env.DATABASE_URL) {
+    try {
+      new URL(process.env.DATABASE_URL);
+      return {
+        connectionString: process.env.DATABASE_URL,
+        ssl: { rejectUnauthorized: false }  // required for Supabase
+      };
+    } catch (err) {
+      console.error('⚠️ Invalid DATABASE_URL:', err.message);
+      console.error('⚠️ Falling back to DB_HOST/DB_PORT/DB_NAME/DB_USER/DB_PASSWORD configuration.');
+    }
+  }
+
   const config = {
     host: process.env.DB_HOST || 'localhost',
     port: Number(process.env.DB_PORT || 5432),
@@ -41,11 +43,12 @@ if (process.env.DATABASE_URL && process.env.DATABASE_URL.trim() !== '') {
     password: process.env.DB_PASSWORD || '',
     ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : undefined
   };
- 
+  
+  // Warn if using localhost in production
   if (config.host === 'localhost' && process.env.NODE_ENV === 'production') {
     console.warn('⚠️⚠️⚠️ WARNING: Using localhost in PRODUCTION! Set DB_HOST or DATABASE_URL env vars.');
   }
- 
+  
   console.log('📊 Using DB Config:', {
     host: config.host,
     port: config.port,
@@ -54,13 +57,17 @@ if (process.env.DATABASE_URL && process.env.DATABASE_URL.trim() !== '') {
     password: config.password ? '****' : '(empty)',
     ssl: config.ssl ? 'enabled' : 'disabled'
   });
- 
-  pool = new Pool(config);
-}
- 
+  
+  return config;
+})();
+
+const pool = new Pool(dbConfig);
+
+module.exports = pool
+
 pool.on('connect', () => console.log('✅ PostgreSQL connected'));
 pool.on('error', (err) => console.error('❌ PostgreSQL pool error:', err?.message || err));
- 
+
 // Test connection
 pool.query('SELECT NOW()', (err, res) => {
   if (err) {
