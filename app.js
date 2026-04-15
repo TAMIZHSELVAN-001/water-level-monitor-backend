@@ -251,8 +251,13 @@ const swaggerOptions = {
 
     servers: [
       {
-        url: `http://localhost:${PORT}`,
+        url: 'https://water-level-monitor-backend-1.onrender.com',
+        description: 'Production server'
       },
+      {
+        url: `http://localhost:${PORT}`,
+        description: 'Local development'
+      } 
     ],
 
     components: {
